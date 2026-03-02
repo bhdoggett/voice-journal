@@ -4,6 +4,12 @@ Description: >-
 Transform:
 - AWS::Serverless-2016-10-31
 
+Parameters:
+  GeminiApiKey:
+    Type: String
+    NoEcho: true
+    Description: Google Gemini API key
+
 # Resources declares the AWS resources that you want to include in the stack
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
 Resources:
@@ -108,6 +114,26 @@ Resources:
         ReadCapacityUnits: 2
         WriteCapacityUnits: 2
 
+  formatTextFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/format-text.formatTextHandler
+      Runtime: nodejs22.x
+      Architectures:
+        - x86_64
+      MemorySize: 256
+      Timeout: 30
+      Description: Formats raw speech-to-text using Gemini 2.5 Flash
+      Environment:
+        Variables:
+          GEMINI_API_KEY: !Ref GeminiApiKey
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /format-text
+            Method: POST
+
   ApplicationResourceGroup:
     Type: AWS::ResourceGroups::Group
     Properties:
@@ -125,6 +151,9 @@ Outputs:
   WebEndpoint:
     Description: API Gateway endpoint URL for Prod stage
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/Prod/"
+  FormatTextEndpoint:
+    Description: Format text endpoint
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/Prod/format-text"
 # # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
@@ -134,3 +163,7 @@ Globals:
       LogFormat: JSON
   Api:
     TracingEnabled: true
+    Cors:
+      AllowMethods: "'POST,OPTIONS'"
+      AllowHeaders: "'Content-Type'"
+      AllowOrigin: "'*'"
