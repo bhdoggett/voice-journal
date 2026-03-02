@@ -1,0 +1,163 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.heading {
+  font-size: 18px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.empty {
+  font-size: 14px;
+  color: #9ca3af;
+  text-align: center;
+  padding: 32px 0;
+}
+
+.card {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 16px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.date {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.audioBadge {
+  font-size: 12px;
+  color: #6366f1;
+  background: #eef2ff;
+  border-radius: 4px;
+  padding: 1px 6px;
+  width: fit-content;
+}
+
+.cardActions {
+  display: flex;
+  gap: 8px;
+}
+
+.expandButton {
+  font-size: 13px;
+  border: 1px solid #d1d5db;
+  border-radius: 5px;
+  padding: 4px 10px;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.expandButton:hover {
+  background: #f3f4f6;
+}
+
+.deleteButton {
+  font-size: 13px;
+  border: 1px solid #fca5a5;
+  border-radius: 5px;
+  padding: 4px 10px;
+  background: transparent;
+  color: #ef4444;
+  cursor: pointer;
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.deleteButton:hover {
+  background: #fef2f2;
+}
+
+.preview {
+  font-size: 14px;
+  color: #4b5563;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.fullText {
+  font-size: 14px;
+  color: #374151;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.audioSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 8px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.audioLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.audioItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.audioTime {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.audioPlayer {
+  width: 100%;
+  height: 36px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .heading {
+    color: #e2e8f0;
+  }
+
+  .card {
+    background: #1e1e2e;
+    border-color: #374151;
+  }
+
+  .date {
+    color: #e2e8f0;
+  }
+
+  .preview,
+  .fullText {
+    color: #cbd5e1;
+  }
+
+  .audioSection {
+    border-top-color: #374151;
+  }
+}
