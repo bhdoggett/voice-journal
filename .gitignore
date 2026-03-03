@@ -21,6 +21,12 @@ frontend/build
 # backend
 backend/.aws-sam
 
+# terraform
+backend/terraform/.terraform/
+backend/terraform/*.tfstate
+backend/terraform/*.tfstate.backup
+backend/terraform/*.tfstate.*
+
 # misc
 .DS_Store
 *.pem
