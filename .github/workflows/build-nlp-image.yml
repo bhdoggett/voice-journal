@@ -1,0 +1,49 @@
+name: Build & Push NLP Lambda Image
+
+on:
+  push:
+    branches: [dev, main]
+    paths:
+      - 'backend/src/format-text-nlp/**'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_GITHUB_ACTIONS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Login to ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: vj-format-text-nlp
+        run: |
+          docker build \
+            --platform linux/amd64 \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
+            backend/src/format-text-nlp/
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+      - name: Update Lambda to use new image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: vj-format-text-nlp
+        run: |
+          aws lambda update-function-code \
+            --function-name vj-format-text-nlp \
+            --image-uri $ECR_REGISTRY/$ECR_REPOSITORY:latest \
+            --region us-east-1
