@@ -3,6 +3,9 @@ FROM public.ecr.aws/lambda/python:3.11
 # Set HuggingFace cache inside the image so the model is baked in
 ENV TRANSFORMERS_CACHE=/var/task/model_cache
 ENV HF_HOME=/var/task/model_cache
+ENV TRANSFORMERS_OFFLINE=1
+ENV HF_DATASETS_OFFLINE=1
+ENV HF_HUB_OFFLINE=1
 
 COPY requirements.txt .
 # Install CPU-only PyTorch first to avoid CUDA wheels (~2.5 GB saved) and

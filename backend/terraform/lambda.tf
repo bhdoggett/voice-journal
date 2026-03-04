@@ -44,8 +44,8 @@ resource "aws_lambda_function" "format_text_nlp" {
   description   = "Formats raw speech-to-text using deepmultilingualpunctuation"
   package_type  = "Image"
   image_uri     = "${aws_ecr_repository.format_text_nlp.repository_url}:latest"
-  timeout       = 60
-  memory_size   = 2048
+  timeout       = 300
+  memory_size   = 3008
 
   tracing_config { mode = "Active" }
   logging_config { log_format = "JSON" }
