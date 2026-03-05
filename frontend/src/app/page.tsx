@@ -59,7 +59,7 @@ export default function Home() {
         setIsFormatting(true);
         try {
           const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/format-text`,
+            `${process.env.NEXT_PUBLIC_API_URL}/format-text-nlp`,
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },

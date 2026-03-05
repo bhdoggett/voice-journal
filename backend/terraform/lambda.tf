@@ -57,7 +57,7 @@ resource "aws_lambda_function" "format_text_nlp" {
 
 resource "aws_cloudwatch_event_rule" "nlp_warmer" {
   name                = "vj-format-text-nlp-warmer"
-  schedule_expression = "rate(10 minutes)"
+  schedule_expression = "rate(5 minutes)"
 }
 
 resource "aws_cloudwatch_event_target" "nlp_warmer" {
