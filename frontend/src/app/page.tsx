@@ -3,12 +3,10 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { VoiceRecorder } from "@/components/VoiceRecorder/VoiceRecorder";
 import { JournalEditor } from "@/components/JournalEditor/JournalEditor";
-import { EntryList } from "@/components/EntryList/EntryList";
+import { Sidebar } from "@/components/Sidebar/Sidebar";
 import { useJournalEntries } from "@/hooks/useJournalEntries";
 import { useTheme } from "@/hooks/useTheme";
 import { AudioSegment } from "@/types/journal";
-import { ThemePicker } from "@/components/ThemePicker/ThemePicker";
-import { AuthNav } from "@/components/AuthNav/AuthNav";
 import styles from "./page.module.css";
 
 function blobToBase64(blob: Blob): Promise<string> {
@@ -161,30 +159,22 @@ export default function Home() {
   return (
     <div className={styles.shell}>
       {/* Sidebar */}
-      <aside className={styles.sidebar}>
-        <div className={styles.sidebarHeader}>Voice Journal</div>
-        <EntryList
-          entries={entries}
-          onDelete={deleteEntry}
-          selectedId={selectedEntryId}
-          onSelect={setSelectedEntryId}
-        />
-        <ThemePicker theme={theme} setTheme={setTheme} />
-        <AuthNav />
-      </aside>
+      <Sidebar
+        entries={entries}
+        selectedId={selectedEntryId}
+        onSelect={setSelectedEntryId}
+        onDelete={deleteEntry}
+        onNewEntry={() => setSelectedEntryId(null)}
+        theme={theme}
+        setTheme={setTheme}
+      />
 
       {/* Journal area */}
       <main className={styles.journalArea}>
         <div className={styles.journalPage}>
           {/* Page header */}
           <div className={styles.pageHeader}>
-            {viewedEntry ? (
-              <button className={styles.backLink} onClick={() => setSelectedEntryId(null)}>
-                ← new entry
-              </button>
-            ) : (
-              <span className={styles.pageDate}>{pageDate}</span>
-            )}
+            <span className={styles.pageDate}>{pageDate}</span>
             {!viewedEntry && (
               <VoiceRecorder
                 onSegmentRecorded={handleSegmentRecorded}
