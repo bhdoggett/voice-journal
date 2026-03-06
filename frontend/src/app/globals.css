@@ -94,6 +94,19 @@
   --paper-ink-overlay: rgba(15, 25, 41, 0.08);
 }
 
+/* Font overrides — must target body so Next.js font vars (set on body) are in scope */
+html[data-font="merriweather"] body { --font-journal: var(--font-merriweather), Georgia, serif; }
+html[data-font="eb-garamond"]  body { --font-journal: var(--font-eb-garamond),  Georgia, serif; }
+html[data-font="crimson"]      body { --font-journal: var(--font-crimson),       Georgia, serif; }
+
+/* Text size overrides */
+[data-text-size="small"] { --text-body: 0.9375rem; --page-line-height: 1.875rem; }
+[data-text-size="large"] { --text-body: 1.25rem;   --page-line-height: 2.25rem; }
+
+/* Line spacing overrides */
+[data-line-spacing="compact"] { --page-line-height: 1.75rem; }
+[data-line-spacing="relaxed"] { --page-line-height: 2.375rem; }
+
 html,
 body {
   max-width: 100vw;

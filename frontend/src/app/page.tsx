@@ -6,6 +6,9 @@ import { JournalEditor } from "@/components/JournalEditor/JournalEditor";
 import { Sidebar } from "@/components/Sidebar/Sidebar";
 import { useJournalEntries } from "@/hooks/useJournalEntries";
 import { useTheme } from "@/hooks/useTheme";
+import { useFont } from "@/hooks/useFont";
+import { useTextSize } from "@/hooks/useTextSize";
+import { useLineSpacing } from "@/hooks/useLineSpacing";
 import { AudioSegment } from "@/types/journal";
 import styles from "./page.module.css";
 
@@ -38,6 +41,9 @@ export default function Home() {
   const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
   const { entries, saveEntry, deleteEntry, error: storageError } = useJournalEntries();
   const { theme, setTheme } = useTheme();
+  const { font, setFont } = useFont();
+  const { textSize, setTextSize } = useTextSize();
+  const { lineSpacing, setLineSpacing } = useLineSpacing();
 
   const editableTextRef = useRef(editableText);
   useEffect(() => {
@@ -167,6 +173,12 @@ export default function Home() {
         onNewEntry={() => setSelectedEntryId(null)}
         theme={theme}
         setTheme={setTheme}
+        font={font}
+        setFont={setFont}
+        textSize={textSize}
+        setTextSize={setTextSize}
+        lineSpacing={lineSpacing}
+        setLineSpacing={setLineSpacing}
       />
 
       {/* Journal area */}

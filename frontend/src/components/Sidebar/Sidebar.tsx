@@ -2,10 +2,13 @@
 
 import { useState } from "react";
 import { EntryList } from "@/components/EntryList/EntryList";
-import { ThemePicker } from "@/components/ThemePicker/ThemePicker";
+import { Settings } from "@/components/Settings/Settings";
 import { AuthNav } from "@/components/AuthNav/AuthNav";
 import { JournalEntry } from "@/types/journal";
 import { ThemeName } from "@/hooks/useTheme";
+import { FontName } from "@/hooks/useFont";
+import { TextSizeName } from "@/hooks/useTextSize";
+import { LineSpacingName } from "@/hooks/useLineSpacing";
 import styles from "./Sidebar.module.css";
 
 interface SidebarProps {
@@ -16,6 +19,12 @@ interface SidebarProps {
   onNewEntry: () => void;
   theme: ThemeName;
   setTheme: (t: ThemeName) => void;
+  font: FontName;
+  setFont: (f: FontName) => void;
+  textSize: TextSizeName;
+  setTextSize: (s: TextSizeName) => void;
+  lineSpacing: LineSpacingName;
+  setLineSpacing: (l: LineSpacingName) => void;
 }
 
 export function Sidebar({
@@ -26,6 +35,12 @@ export function Sidebar({
   onNewEntry,
   theme,
   setTheme,
+  font,
+  setFont,
+  textSize,
+  setTextSize,
+  lineSpacing,
+  setLineSpacing,
 }: SidebarProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [entriesOpen, setEntriesOpen] = useState(true);
@@ -79,7 +94,12 @@ export function Sidebar({
           </button>
           {settingsOpen && (
             <div className={styles.sectionBody}>
-              <ThemePicker theme={theme} setTheme={setTheme} />
+              <Settings
+                theme={theme} setTheme={setTheme}
+                font={font} setFont={setFont}
+                textSize={textSize} setTextSize={setTextSize}
+                lineSpacing={lineSpacing} setLineSpacing={setLineSpacing}
+              />
             </div>
           )}
         </section>
