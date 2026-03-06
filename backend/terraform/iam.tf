@@ -127,3 +127,43 @@ resource "aws_iam_role_policy" "nlp_ecr" {
     ]
   })
 }
+
+resource "aws_iam_role" "auth_lambda" {
+  name = "vj-auth-lambda-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action    = "sts:AssumeRole"
+      Effect    = "Allow"
+      Principal = { Service = "lambda.amazonaws.com" }
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "auth_lambda_basic_execution" {
+  role       = aws_iam_role.auth_lambda.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+resource "aws_iam_role_policy_attachment" "auth_lambda_xray" {
+  role       = aws_iam_role.auth_lambda.name
+  policy_arn = "arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess"
+}
+
+resource "aws_iam_role_policy" "auth_lambda_ssm" {
+  name = "vj-auth-lambda-ssm"
+  role = aws_iam_role.auth_lambda.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = "ssm:GetParameter"
+      Resource = [
+        aws_ssm_parameter.database_url.arn,
+        aws_ssm_parameter.better_auth_secret.arn,
+      ]
+    }]
+  })
+}

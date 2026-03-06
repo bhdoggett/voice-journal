@@ -3,7 +3,15 @@
     "description": "Voice Journal backend",
     "version": "0.0.1",
     "private": true,
+    "scripts": {
+        "build:auth": "esbuild src/handlers/auth.ts --bundle --platform=node --target=node22 --outfile=dist/auth.js --external:pg-native"
+    },
     "dependencies": {
-        "@google/genai": "^1.0.0"
+        "@google/genai": "^1.0.0",
+        "pg": "^8.11.0"
+    },
+    "devDependencies": {
+        "@types/node": "^20",
+        "esbuild": "^0.25.0"
     }
 }

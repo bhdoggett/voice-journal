@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: vj-postgres
+    environment:
+      POSTGRES_DB: voice_journal
+      POSTGRES_USER: vj
+      POSTGRES_PASSWORD: vj_local_dev
+    ports: ["5432:5432"]
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
+volumes:
+  postgres_data:

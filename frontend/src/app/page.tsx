@@ -9,6 +9,7 @@ import { useTheme } from "@/hooks/useTheme";
 import { AudioSegment } from "@/types/journal";
 import { DEMO_ENTRIES } from "@/data/demoEntries";
 import { ThemePicker } from "@/components/ThemePicker/ThemePicker";
+import { AuthNav } from "@/components/AuthNav/AuthNav";
 import styles from "./page.module.css";
 
 function blobToBase64(blob: Blob): Promise<string> {
@@ -180,6 +181,7 @@ export default function Home() {
           onSelect={setSelectedEntryId}
         />
         <ThemePicker theme={theme} setTheme={setTheme} />
+        <AuthNav />
       </aside>
 
       {/* Journal area */}

@@ -12,3 +12,8 @@ output "github_actions_role_arn" {
   description = "ARN of the IAM role for GitHub Actions to build and push the NLP image"
   value       = aws_iam_role.github_actions_nlp.arn
 }
+
+output "auth_lambda_url" {
+  description = "Function URL for the auth session-validation Lambda"
+  value       = aws_lambda_function_url.auth.function_url
+}

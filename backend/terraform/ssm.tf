@@ -7,3 +7,17 @@ resource "aws_ssm_parameter" "gemini_api_key" {
   type  = "String"
   value = data.aws_ssm_parameter.gemini_api_key.value
 }
+
+resource "aws_ssm_parameter" "database_url" {
+  name  = "VJ_DATABASE_URL"
+  type  = "SecureString"
+  value = "placeholder"
+  lifecycle { ignore_changes = [value] }
+}
+
+resource "aws_ssm_parameter" "better_auth_secret" {
+  name  = "VJ_BETTER_AUTH_SECRET"
+  type  = "SecureString"
+  value = "placeholder"
+  lifecycle { ignore_changes = [value] }
+}
