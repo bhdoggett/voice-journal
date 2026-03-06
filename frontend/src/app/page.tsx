@@ -4,10 +4,9 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { VoiceRecorder } from "@/components/VoiceRecorder/VoiceRecorder";
 import { JournalEditor } from "@/components/JournalEditor/JournalEditor";
 import { EntryList } from "@/components/EntryList/EntryList";
-import { useJournalStorage } from "@/hooks/useJournalStorage";
+import { useJournalEntries } from "@/hooks/useJournalEntries";
 import { useTheme } from "@/hooks/useTheme";
 import { AudioSegment } from "@/types/journal";
-import { DEMO_ENTRIES } from "@/data/demoEntries";
 import { ThemePicker } from "@/components/ThemePicker/ThemePicker";
 import { AuthNav } from "@/components/AuthNav/AuthNav";
 import styles from "./page.module.css";
@@ -39,13 +38,8 @@ export default function Home() {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
-
-  const { entries, saveEntry, deleteEntry, seedEntries, error: storageError } = useJournalStorage();
+  const { entries, saveEntry, deleteEntry, error: storageError } = useJournalEntries();
   const { theme, setTheme } = useTheme();
-
-  const handleSeedDemo = useCallback(() => {
-    seedEntries(DEMO_ENTRIES);
-  }, [seedEntries]);
 
   const editableTextRef = useRef(editableText);
   useEffect(() => {
@@ -112,7 +106,7 @@ export default function Home() {
     []
   );
 
-  const handleSave = useCallback(() => {
+  const handleSave = useCallback(async () => {
     if (!editableText.trim()) return;
     setIsSaving(true);
     setSaveError(null);
@@ -127,7 +121,7 @@ export default function Home() {
         audioSegments,
       };
 
-      const success = saveEntry(entry);
+      const success = await saveEntry(entry);
       if (success) {
         setEditableText("");
         setAudioSegments([]);
@@ -169,11 +163,6 @@ export default function Home() {
       {/* Sidebar */}
       <aside className={styles.sidebar}>
         <div className={styles.sidebarHeader}>Voice Journal</div>
-        {process.env.NODE_ENV === "development" && (
-          <button className={styles.seedButton} onClick={handleSeedDemo}>
-            Load demo data
-          </button>
-        )}
         <EntryList
           entries={entries}
           onDelete={deleteEntry}

@@ -58,6 +58,6 @@ export const journalEntry = pgTable("journal_entry", {
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
   text: text("text").notNull(),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  createdAt: ts("created_at").notNull().defaultNow(),
+  updatedAt: ts("updated_at").notNull().defaultNow(),
 });
