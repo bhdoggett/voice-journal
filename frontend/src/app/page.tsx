@@ -6,6 +6,7 @@ import { JournalEditor } from "@/components/JournalEditor/JournalEditor";
 import { EntryList } from "@/components/EntryList/EntryList";
 import { useJournalStorage } from "@/hooks/useJournalStorage";
 import { AudioSegment } from "@/types/journal";
+import { DEMO_ENTRIES } from "@/data/demoEntries";
 import styles from "./page.module.css";
 
 function blobToBase64(blob: Blob): Promise<string> {
@@ -36,7 +37,11 @@ export default function Home() {
   const [isRecording, setIsRecording] = useState(false);
   const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
 
-  const { entries, saveEntry, deleteEntry, error: storageError } = useJournalStorage();
+  const { entries, saveEntry, deleteEntry, seedEntries, error: storageError } = useJournalStorage();
+
+  const handleSeedDemo = useCallback(() => {
+    seedEntries(DEMO_ENTRIES);
+  }, [seedEntries]);
 
   const editableTextRef = useRef(editableText);
   useEffect(() => {
@@ -155,6 +160,11 @@ export default function Home() {
       {/* Sidebar */}
       <aside className={styles.sidebar}>
         <div className={styles.sidebarHeader}>Voice Journal</div>
+        {process.env.NODE_ENV === "development" && (
+          <button className={styles.seedButton} onClick={handleSeedDemo}>
+            Load demo data
+          </button>
+        )}
         <EntryList
           entries={entries}
           onDelete={deleteEntry}

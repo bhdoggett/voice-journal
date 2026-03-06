@@ -25,6 +25,27 @@
   flex-shrink: 0;
 }
 
+.seedButton {
+  display: block;
+  width: 100%;
+  padding: 8px 20px;
+  font-size: 10px;
+  font-family: var(--font-ui);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--cover-text-muted);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #2e2e2e;
+  cursor: pointer;
+  text-align: left;
+  flex-shrink: 0;
+}
+
+.seedButton:hover {
+  color: var(--cover-accent);
+}
+
 /* ── Journal area ─────────────────────────────────── */
 
 .journalArea {

@@ -70,5 +70,19 @@ export function useJournalStorage() {
     });
   }
 
-  return { entries, saveEntry, deleteEntry, updateEntry, error, setError };
+  function seedEntries(newEntries: JournalEntry[]): void {
+    setEntries((prev) => {
+      const existingIds = new Set(prev.map((e) => e.id));
+      const merged = [
+        ...prev,
+        ...newEntries.filter((e) => !existingIds.has(e.id)),
+      ].sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+      writeToStorage(merged);
+      return merged;
+    });
+  }
+
+  return { entries, saveEntry, deleteEntry, updateEntry, seedEntries, error, setError };
 }
