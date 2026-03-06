@@ -16,20 +16,46 @@ function getBestMimeType(): string {
   return PREFERRED_TYPES.find((t) => MediaRecorder.isTypeSupported(t)) ?? "";
 }
 
+function MicSvg({ active }: { active: boolean }) {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {/* Capsule body */}
+      <rect x="9" y="2" width="6" height="12" rx="3" />
+      {/* Stand arc */}
+      <path d="M5 10a7 7 0 0 0 14 0" />
+      {/* Stem */}
+      <line x1="12" y1="17" x2="12" y2="21" />
+      {/* Base */}
+      <line x1="8" y1="21" x2="16" y2="21" />
+      {active && <circle cx="19" cy="5" r="3" fill="#ef4444" stroke="none" />}
+    </svg>
+  );
+}
+
 interface VoiceRecorderProps {
   onSegmentRecorded: (sessionText: string, audioBlob: Blob) => void;
-  /** Called whenever finalized speech text changes during a recording session. */
   onLiveTranscriptChange?: (sessionText: string) => void;
-  /** Called synchronously when the user clicks to start recording. */
   onRecordingStart?: () => void;
+  className?: string;
 }
 
 export function VoiceRecorder({
   onSegmentRecorded,
   onLiveTranscriptChange,
   onRecordingStart,
+  className,
 }: VoiceRecorderProps) {
-  const { isSupported, isListening, transcript, interimTranscript, startListening, stopListening } =
+  const { isSupported, isListening, transcript, startListening, stopListening } =
     useSpeechRecognition();
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -38,13 +64,11 @@ export function VoiceRecorder({
   const transcriptSnapshotRef = useRef("");
   const isRecordingRef = useRef(false);
 
-  // Always-current transcript ref — fixes the stale closure in recorder.onstop
   const transcriptRef = useRef(transcript);
   useEffect(() => {
     transcriptRef.current = transcript;
   });
 
-  // Notify parent of live transcript changes while a session is active
   useEffect(() => {
     if (!isRecordingRef.current) return;
     const sessionText = transcript.slice(transcriptSnapshotRef.current.length).trim();
@@ -59,8 +83,6 @@ export function VoiceRecorder({
   }, [stopListening]);
 
   const startRecording = useCallback(async () => {
-    // Notify parent synchronously (before the async getUserMedia call) so it
-    // can snapshot editableText before any state updates.
     onRecordingStart?.();
 
     try {
@@ -79,7 +101,6 @@ export function VoiceRecorder({
         const blob = new Blob(chunksRef.current, {
           type: recorder.mimeType || "audio/webm",
         });
-        // Use the ref — NOT the closure variable — to get the up-to-date transcript.
         const sessionText = transcriptRef.current
           .slice(transcriptSnapshotRef.current.length)
           .trim();
@@ -89,7 +110,6 @@ export function VoiceRecorder({
         streamRef.current = null;
       };
 
-      // Snapshot current transcript so we can compute the session delta later.
       transcriptSnapshotRef.current = transcriptRef.current;
       isRecordingRef.current = true;
 
@@ -111,31 +131,20 @@ export function VoiceRecorder({
 
   if (!isSupported) {
     return (
-      <div className={styles.container}>
-        <p className={styles.unsupported}>
-          Speech recognition is not supported in this browser. Try Chrome or Edge for the best
-          experience.
-        </p>
-      </div>
+      <span className={styles.unsupportedInline} title="Speech recognition not supported">
+        ✕ mic
+      </span>
     );
   }
 
   return (
-    <div className={styles.container}>
-      <button
-        className={`${styles.micButton} ${isListening ? styles.recording : ""}`}
-        onClick={handleClick}
-        aria-label={isListening ? "Stop recording" : "Start recording"}
-        title={isListening ? "Stop recording" : "Start recording"}
-      >
-        {isListening ? "⏹" : "🎙"}
-      </button>
-      <span className={styles.label}>
-        {isListening ? "Recording… click to stop" : "Click to record"}
-      </span>
-      {interimTranscript && (
-        <p className={styles.interim}>{interimTranscript}</p>
-      )}
-    </div>
+    <button
+      className={`${styles.micButton} ${isListening ? styles.recording : ""} ${className ?? ""}`}
+      onClick={handleClick}
+      aria-label={isListening ? "Stop recording" : "Start recording"}
+      title={isListening ? "Stop recording" : "Start recording"}
+    >
+      <MicSvg active={isListening} />
+    </button>
   );
 }

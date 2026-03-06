@@ -17,6 +17,15 @@ function blobToBase64(blob: Blob): Promise<string> {
   });
 }
 
+function formatPageDate(iso: string | null): string {
+  const date = iso ? new Date(iso) : new Date();
+  return date.toLocaleDateString(undefined, {
+    weekday: "short",
+    month: "long",
+    day: "numeric",
+  });
+}
+
 export default function Home() {
   const [editableText, setEditableText] = useState("");
   const [audioSegments, setAudioSegments] = useState<AudioSegment[]>([]);
@@ -24,36 +33,32 @@ export default function Home() {
   const [isSaving, setIsSaving] = useState(false);
   const [isFormatting, setIsFormatting] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
 
   const { entries, saveEntry, deleteEntry, error: storageError } = useJournalStorage();
 
-  // Always-current ref for editableText — lets callbacks read current value without
-  // being recreated on every keystroke.
   const editableTextRef = useRef(editableText);
   useEffect(() => {
     editableTextRef.current = editableText;
   });
 
-  // Text that was in the editor when the current recording session started.
-  // Stored in a ref so handleLiveTranscriptChange doesn't need editableText as a dep.
   const baseTextRef = useRef("");
 
-  // Called synchronously when the user clicks the mic (before getUserMedia).
   const handleRecordingStart = useCallback(() => {
     baseTextRef.current = editableTextRef.current;
+    setIsRecording(true);
   }, []);
 
-  // Called whenever the speech recognition produces new finalized text.
-  // Merges the session delta with whatever was in the editor before this session.
   const handleLiveTranscriptChange = useCallback((sessionText: string) => {
     const base = baseTextRef.current;
     setEditableText(base && sessionText ? base + "\n\n" + sessionText : base || sessionText);
   }, []);
 
-  // Called when the MediaRecorder stops — formats text via Gemini and processes audio.
   const handleSegmentRecorded = useCallback(
     async (sessionText: string, audioBlob: Blob) => {
-      // Format text via Gemini Lambda (fire in parallel with audio processing)
+      setIsRecording(false);
+
       const formatPromise = (async () => {
         if (!sessionText.trim()) return;
         setIsFormatting(true);
@@ -75,13 +80,11 @@ export default function Home() {
           }
         } catch (err) {
           console.error("Failed to format text:", err);
-          // Silently fall back — raw text already set by handleLiveTranscriptChange
         } finally {
           setIsFormatting(false);
         }
       })();
 
-      // Audio processing
       try {
         const [audioData] = await Promise.all([blobToBase64(audioBlob), formatPromise]);
         const now = new Date().toISOString();
@@ -137,36 +140,81 @@ export default function Home() {
     setSaveError(null);
   }, []);
 
+  const viewedEntry = selectedEntryId
+    ? entries.find((e) => e.id === selectedEntryId) ?? null
+    : null;
+
+  const pageDate = viewedEntry
+    ? formatPageDate(viewedEntry.createdAt)
+    : formatPageDate(sessionStartedAt);
+
+  const totalEntries = entries.length;
+
   return (
-    <div className={styles.page}>
-      <div className={styles.container}>
-        <header className={styles.header}>
-          <h1>Voice Journal</h1>
-          <p>Record your thoughts, review your entries.</p>
-        </header>
-
-        <VoiceRecorder
-          onSegmentRecorded={handleSegmentRecorded}
-          onLiveTranscriptChange={handleLiveTranscriptChange}
-          onRecordingStart={handleRecordingStart}
+    <div className={styles.shell}>
+      {/* Sidebar */}
+      <aside className={styles.sidebar}>
+        <div className={styles.sidebarHeader}>Voice Journal</div>
+        <EntryList
+          entries={entries}
+          onDelete={deleteEntry}
+          selectedId={selectedEntryId}
+          onSelect={setSelectedEntryId}
         />
+      </aside>
 
-        <JournalEditor
-          text={editableText}
-          audioSegments={audioSegments}
-          sessionStartedAt={sessionStartedAt}
-          onTextChange={setEditableText}
-          onSave={handleSave}
-          onClear={handleClear}
-          isSaving={isSaving}
-          isFormatting={isFormatting}
-          error={saveError}
-        />
+      {/* Journal area */}
+      <main className={styles.journalArea}>
+        <div className={styles.journalPage}>
+          {/* Page header */}
+          <div className={styles.pageHeader}>
+            {viewedEntry ? (
+              <button className={styles.backLink} onClick={() => setSelectedEntryId(null)}>
+                ← new entry
+              </button>
+            ) : (
+              <span className={styles.pageDate}>{pageDate}</span>
+            )}
+            {!viewedEntry && (
+              <VoiceRecorder
+                onSegmentRecorded={handleSegmentRecorded}
+                onLiveTranscriptChange={handleLiveTranscriptChange}
+                onRecordingStart={handleRecordingStart}
+              />
+            )}
+            {viewedEntry && (
+              <span className={styles.pageDate}>{formatPageDate(viewedEntry.createdAt)}</span>
+            )}
+          </div>
 
-        <hr className={styles.divider} />
+          {/* Body: editor or read-only view */}
+          {viewedEntry ? (
+            <>
+              <div className={styles.readOnlyBody}>
+                <div className={styles.readOnlyText}>{viewedEntry.text}</div>
+              </div>
+              <div className={styles.readOnlyFooter} />
+            </>
+          ) : (
+            <JournalEditor
+              text={editableText}
+              audioSegments={audioSegments}
+              isRecording={isRecording}
+              onTextChange={setEditableText}
+              onSave={handleSave}
+              onClear={handleClear}
+              isSaving={isSaving}
+              isFormatting={isFormatting}
+              error={saveError}
+            />
+          )}
 
-        <EntryList entries={entries} onDelete={deleteEntry} />
-      </div>
+          {/* Page footer */}
+          <div className={styles.pageFooter}>
+            <span className={styles.pageNumber}>{totalEntries}</span>
+          </div>
+        </div>
+      </main>
     </div>
   );
 }

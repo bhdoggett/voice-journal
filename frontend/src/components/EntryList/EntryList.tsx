@@ -1,108 +1,98 @@
 "use client";
 
-import { useState } from "react";
 import { JournalEntry } from "@/types/journal";
 import styles from "./EntryList.module.css";
 
 interface EntryListProps {
   entries: JournalEntry[];
   onDelete: (id: string) => void;
+  selectedId: string | null;
+  onSelect: (id: string) => void;
 }
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleString(undefined, {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
+function groupByDate(entries: JournalEntry[]): Array<{ label: string; items: JournalEntry[] }> {
+  const sorted = [...entries].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+
+  const groups: Map<string, JournalEntry[]> = new Map();
+  for (const entry of sorted) {
+    const label = new Date(entry.createdAt).toLocaleDateString(undefined, {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+    if (!groups.has(label)) groups.set(label, []);
+    groups.get(label)!.push(entry);
+  }
+
+  return Array.from(groups.entries()).map(([label, items]) => ({ label, items }));
 }
 
-function EntryCard({
+function EntryRow({
   entry,
+  selected,
+  onSelect,
   onDelete,
 }: {
   entry: JournalEntry;
+  selected: boolean;
+  onSelect: (id: string) => void;
   onDelete: (id: string) => void;
 }) {
-  const [expanded, setExpanded] = useState(false);
+  const preview = entry.text.length > 60 ? entry.text.slice(0, 60) + "…" : entry.text;
+  const hasAudio = entry.audioSegments.length > 0;
 
-  const preview = entry.text.length > 150 ? entry.text.slice(0, 150) + "…" : entry.text;
-  const needsExpand = entry.text.length > 150 || entry.audioSegments.length > 0;
-
-  function handleDelete() {
-    if (window.confirm("Delete this journal entry? This cannot be undone.")) {
-      onDelete(entry.id);
-    }
+  function handleDelete(e: React.MouseEvent) {
+    e.stopPropagation();
+    if (window.confirm("Delete this entry?")) onDelete(entry.id);
   }
 
   return (
-    <div className={styles.card}>
-      <div className={styles.cardHeader}>
-        <div className={styles.meta}>
-          <span className={styles.date}>{formatDate(entry.createdAt)}</span>
-          {entry.audioSegments.length > 0 && (
-            <span className={styles.audioBadge}>
-              {entry.audioSegments.length} audio segment{entry.audioSegments.length !== 1 ? "s" : ""}
-            </span>
-          )}
-        </div>
-        <div className={styles.cardActions}>
-          {needsExpand && (
-            <button
-              className={styles.expandButton}
-              onClick={() => setExpanded((v) => !v)}
-            >
-              {expanded ? "Collapse" : "Expand"}
-            </button>
-          )}
-          <button className={styles.deleteButton} onClick={handleDelete}>
-            Delete
-          </button>
-        </div>
-      </div>
-
-      {expanded ? (
-        <>
-          <p className={styles.fullText}>{entry.text}</p>
-          {entry.audioSegments.length > 0 && (
-            <div className={styles.audioSection}>
-              <span className={styles.audioLabel}>Audio Recordings</span>
-              {entry.audioSegments.map((seg) => (
-                <div key={seg.id} className={styles.audioItem}>
-                  <span className={styles.audioTime}>{formatDate(seg.timestamp)}</span>
-                  <audio
-                    className={styles.audioPlayer}
-                    controls
-                    src={seg.audioData}
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-        </>
-      ) : (
-        <p className={styles.preview}>{preview}</p>
-      )}
+    <div
+      className={`${styles.row} ${selected ? styles.rowSelected : ""}`}
+      onClick={() => onSelect(entry.id)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => e.key === "Enter" && onSelect(entry.id)}
+    >
+      <span className={styles.rowPreview}>
+        {hasAudio && <span className={styles.audioDot}>•</span>}
+        {preview}
+      </span>
+      <button className={styles.deleteBtn} onClick={handleDelete} aria-label="Delete entry">
+        ×
+      </button>
     </div>
   );
 }
 
-export function EntryList({ entries, onDelete }: EntryListProps) {
+export function EntryList({ entries, onDelete, selectedId, onSelect }: EntryListProps) {
   if (entries.length === 0) {
     return (
-      <div className={styles.container}>
-        <p className={styles.empty}>No entries yet. Record your first journal entry above.</p>
+      <div className={styles.empty}>
+        <span>No entries yet</span>
       </div>
     );
   }
 
+  const groups = groupByDate(entries);
+
   return (
-    <div className={styles.container}>
-      <h2 className={styles.heading}>Past Entries ({entries.length})</h2>
-      {entries.map((entry) => (
-        <EntryCard key={entry.id} entry={entry} onDelete={onDelete} />
+    <div className={styles.list}>
+      {groups.map(({ label, items }) => (
+        <div key={label}>
+          <div className={styles.dateLabel}>{label}</div>
+          {items.map((entry) => (
+            <EntryRow
+              key={entry.id}
+              entry={entry}
+              selected={selectedId === entry.id}
+              onSelect={onSelect}
+              onDelete={onDelete}
+            />
+          ))}
+        </div>
       ))}
     </div>
   );

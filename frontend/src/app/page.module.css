@@ -1,55 +1,165 @@
-.page {
+.shell {
+  display: flex;
   min-height: 100vh;
-  padding: 40px 24px 80px;
-  background: #f9fafb;
 }
 
-.container {
-  max-width: 720px;
-  margin: 0 auto;
+/* ── Sidebar ───────────────────────────────────────── */
+
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: var(--cover-bg);
+  border-right: 1px solid #2e2e2e;
   display: flex;
   flex-direction: column;
-  gap: 24px;
 }
 
-.header {
-  text-align: center;
-  padding-bottom: 8px;
+.sidebarHeader {
+  padding: 28px 20px 16px;
+  font-size: 11px;
+  font-family: var(--font-ui);
+  font-variant: small-caps;
+  letter-spacing: 0.12em;
+  color: var(--cover-text-muted);
+  border-bottom: 1px solid #2e2e2e;
+  flex-shrink: 0;
 }
 
-.header h1 {
-  font-size: 28px;
-  font-weight: 700;
-  color: #111827;
-  letter-spacing: -0.5px;
+/* ── Journal area ─────────────────────────────────── */
+
+.journalArea {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 48px 32px 80px;
+  overflow-y: auto;
 }
 
-.header p {
-  font-size: 14px;
-  color: #6b7280;
-  margin-top: 6px;
+.journalPage {
+  width: 100%;
+  max-width: 680px;
+  background: var(--paper-bg);
+  border-radius: 2px 6px 6px 2px;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.3),
+    0 4px 16px rgba(0, 0, 0, 0.25),
+    0 12px 40px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  min-height: 560px;
+  position: relative;
 }
 
-.divider {
+/* Left-edge ribbon (elastic band detail) */
+.journalPage::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: var(--cover-accent);
+  border-radius: 2px 0 0 2px;
+  opacity: 0.7;
+}
+
+/* ── Page header ──────────────────────────────────── */
+
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px var(--page-padding-h) 12px;
+  border-bottom: 1px solid var(--paper-line);
+  flex-shrink: 0;
+}
+
+.pageDate {
+  font-size: 11px;
+  font-family: var(--font-ui);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--paper-ink-muted);
+}
+
+.backLink {
+  font-size: 11px;
+  font-family: var(--font-ui);
+  color: var(--cover-accent);
+  cursor: pointer;
+  background: none;
   border: none;
-  border-top: 1px solid #e5e7eb;
-  margin: 8px 0;
+  padding: 0;
+  letter-spacing: 0.04em;
 }
 
-@media (prefers-color-scheme: dark) {
-  .page {
-    background: #0f0f1a;
+.backLink:hover {
+  text-decoration: underline;
+}
+
+/* ── Read-only view ───────────────────────────────── */
+
+.readOnlyBody {
+  flex: 1;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent calc(var(--page-line-height) - 1px),
+    var(--paper-line) calc(var(--page-line-height) - 1px),
+    var(--paper-line) var(--page-line-height)
+  );
+  background-position: 0 var(--page-padding-top);
+  padding: var(--page-padding-top) var(--page-padding-h) 0;
+}
+
+.readOnlyText {
+  font-family: var(--font-journal);
+  font-size: 17px;
+  line-height: var(--page-line-height);
+  color: var(--paper-ink);
+  white-space: pre-wrap;
+}
+
+.readOnlyFooter {
+  display: flex;
+  align-items: center;
+  padding: 10px var(--page-padding-h);
+  border-top: 1px solid var(--paper-line);
+}
+
+/* ── Page footer ──────────────────────────────────── */
+
+.pageFooter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px var(--page-padding-h);
+  border-top: 1px solid var(--paper-line);
+  flex-shrink: 0;
+}
+
+.pageNumber {
+  font-size: 11px;
+  font-family: var(--font-ui);
+  color: var(--paper-ink-muted);
+}
+
+/* ── Responsive ───────────────────────────────────── */
+
+@media (max-width: 680px) {
+  .shell {
+    flex-direction: column;
   }
 
-  .header h1 {
-    color: #f1f5f9;
+  .sidebar {
+    width: 100%;
+    max-height: 180px;
+    border-right: none;
+    border-bottom: 1px solid #2e2e2e;
   }
 
-  .header p {
-    color: #94a3b8;
-  }
-
-  .divider {
-    border-top-color: #1e293b;
+  .journalArea {
+    padding: 24px 16px 60px;
   }
 }

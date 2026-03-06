@@ -6,7 +6,7 @@ import styles from "./JournalEditor.module.css";
 interface JournalEditorProps {
   text: string;
   audioSegments: AudioSegment[];
-  sessionStartedAt: string | null;
+  isRecording: boolean;
   onTextChange: (text: string) => void;
   onSave: () => void;
   onClear: () => void;
@@ -18,7 +18,6 @@ interface JournalEditorProps {
 export function JournalEditor({
   text,
   audioSegments,
-  sessionStartedAt,
   onTextChange,
   onSave,
   onClear,
@@ -28,47 +27,43 @@ export function JournalEditor({
 }: JournalEditorProps) {
   const isEmpty = text.trim() === "";
 
-  const formattedDate = sessionStartedAt
-    ? new Date(sessionStartedAt).toLocaleString(undefined, {
-        weekday: "short",
-        month: "short",
-        day: "numeric",
-        hour: "numeric",
-        minute: "2-digit",
-      })
-    : null;
-
   return (
-    <div className={styles.container}>
-      {formattedDate && (
-        <p className={styles.timestamp}>
-          {formattedDate} · {audioSegments.length} segment{audioSegments.length !== 1 ? "s" : ""}
-        </p>
-      )}
-      {isFormatting && <p className={styles.formatting}>Formatting…</p>}
-      <textarea
-        className={styles.textarea}
-        value={text}
-        onChange={(e) => onTextChange(e.target.value)}
-        placeholder="Record your voice or type here…"
-      />
-      <div className={styles.actions}>
-        <button
-          className={styles.saveButton}
-          onClick={onSave}
-          disabled={isEmpty || isSaving}
-        >
-          {isSaving ? "Saving…" : "Save Entry"}
-        </button>
-        <button
-          className={styles.clearButton}
-          onClick={onClear}
-          disabled={isEmpty && audioSegments.length === 0}
-        >
-          Clear
-        </button>
+    <>
+      <div className={styles.body}>
+        <textarea
+          className={styles.textarea}
+          value={text}
+          onChange={(e) => onTextChange(e.target.value)}
+          placeholder="Begin writing…"
+        />
       </div>
-      {error && <p className={styles.error}>{error}</p>}
-    </div>
+      <div className={styles.actions}>
+        <div className={styles.actionsLeft}>
+          <button
+            className={styles.saveButton}
+            onClick={onSave}
+            disabled={isEmpty || isSaving}
+          >
+            {isSaving ? "saving…" : "save"}
+          </button>
+          <button
+            className={styles.clearButton}
+            onClick={onClear}
+            disabled={isEmpty && audioSegments.length === 0}
+          >
+            discard
+          </button>
+        </div>
+        <div className={styles.actionsRight}>
+          {isFormatting && (
+            <span className={`${styles.formattingDot}`} title="Formatting…" />
+          )}
+          {error && <span className={styles.error}>{error}</span>}
+          {audioSegments.length > 0 && (
+            <span className={styles.segmentCount}>{audioSegments.length}</span>
+          )}
+        </div>
+      </div>
+    </>
   );
 }
