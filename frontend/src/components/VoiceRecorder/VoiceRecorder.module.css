@@ -14,15 +14,15 @@
 }
 
 .micButton:hover {
-  background: rgba(45, 38, 24, 0.08);
+  background: var(--paper-ink-overlay);
 }
 
 .micButton.recording {
-  color: #c0392b;
+  color: var(--color-danger);
 }
 
 .unsupportedInline {
-  font-size: 11px;
+  font-size: var(--text-sm);
   color: var(--paper-ink-muted);
   font-family: var(--font-ui);
 }

@@ -14,14 +14,84 @@
   --cover-hover: #2a2a2a;
   --cover-active: #333333;
 
+  /* Additional color tokens */
+  --color-border: #2e2e2e;
+  --color-scrollbar: #333333;
+  --color-danger: #c0392b;
+  --color-danger-hover: #e05a5a;
+  --paper-ink-overlay: rgba(45, 38, 24, 0.08);
+
   /* Layout */
-  --page-line-height: 32px;
-  --page-padding-h: 52px;
-  --page-padding-top: 48px;
+  --page-line-height: 2rem;       /* 32px */
+  --page-padding-h: 3.25rem;      /* 52px */
+  --page-padding-top: 4rem;       /* 64px = 2× line-height */
+
+  /* Spacing */
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;    /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.25rem;   /* 20px */
+  --space-6: 1.5rem;    /* 24px */
+  --space-7: 1.75rem;   /* 28px */
+  --space-8: 2rem;      /* 32px */
+  --space-12: 3rem;     /* 48px */
+  --space-20: 5rem;     /* 80px */
+
+  /* Font sizes */
+  --text-xs:   0.625rem;    /* 10px */
+  --text-sm:   0.6875rem;   /* 11px */
+  --text-base: 0.75rem;     /* 12px */
+  --text-md:   0.8125rem;   /* 13px */
+  --text-body: 1.0625rem;   /* 17px */
 
   /* Fonts */
   --font-journal: var(--font-lora), Georgia, serif;
   --font-ui: var(--font-geist-sans), system-ui, sans-serif;
+
+  /* Shadows */
+  --shadow-page:
+    0 1px 3px rgba(0, 0, 0, 0.3),
+    0 4px 16px rgba(0, 0, 0, 0.25),
+    0 12px 40px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="field-notes"] {
+  --cover-bg: #4a3520;
+  --cover-text: #e8d5b0;
+  --cover-text-muted: #8a7055;
+  --cover-accent: #c0392b;
+  --cover-hover: #5a4530;
+  --cover-active: #6b5540;
+  --paper-bg: #f8f6f0;
+  --paper-line: #ddd5c0;
+  --paper-ink: #1a1209;
+  --paper-ink-muted: #6a5a42;
+  --paper-placeholder: #b0a080;
+  --color-border: #3a2a18;
+  --color-scrollbar: #5a4530;
+  --color-danger: #c0392b;
+  --color-danger-hover: #e05a5a;
+  --paper-ink-overlay: rgba(26, 18, 9, 0.08);
+}
+
+[data-theme="leuchtturm"] {
+  --cover-bg: #1a2340;
+  --cover-text: #c8d4e8;
+  --cover-text-muted: #4a5a7a;
+  --cover-accent: #d4a842;
+  --cover-hover: #222e4a;
+  --cover-active: #2a3a5a;
+  --paper-bg: #f9f9f7;
+  --paper-line: #dde2e8;
+  --paper-ink: #0f1929;
+  --paper-ink-muted: #3a4a6a;
+  --paper-placeholder: #8090b0;
+  --color-border: #242f4a;
+  --color-scrollbar: #2a3a5a;
+  --color-danger: #c0392b;
+  --color-danger-hover: #e05a5a;
+  --paper-ink-overlay: rgba(15, 25, 41, 0.08);
 }
 
 html,

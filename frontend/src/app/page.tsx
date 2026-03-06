@@ -5,8 +5,10 @@ import { VoiceRecorder } from "@/components/VoiceRecorder/VoiceRecorder";
 import { JournalEditor } from "@/components/JournalEditor/JournalEditor";
 import { EntryList } from "@/components/EntryList/EntryList";
 import { useJournalStorage } from "@/hooks/useJournalStorage";
+import { useTheme } from "@/hooks/useTheme";
 import { AudioSegment } from "@/types/journal";
 import { DEMO_ENTRIES } from "@/data/demoEntries";
+import { ThemePicker } from "@/components/ThemePicker/ThemePicker";
 import styles from "./page.module.css";
 
 function blobToBase64(blob: Blob): Promise<string> {
@@ -38,6 +40,7 @@ export default function Home() {
   const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
 
   const { entries, saveEntry, deleteEntry, seedEntries, error: storageError } = useJournalStorage();
+  const { theme, setTheme } = useTheme();
 
   const handleSeedDemo = useCallback(() => {
     seedEntries(DEMO_ENTRIES);
@@ -155,6 +158,11 @@ export default function Home() {
 
   const totalEntries = entries.length;
 
+  // entries are sorted newest-first, so chronological position = totalEntries - index
+  const pageNumber = viewedEntry
+    ? totalEntries - entries.findIndex((e) => e.id === viewedEntry.id)
+    : totalEntries + 1;
+
   return (
     <div className={styles.shell}>
       {/* Sidebar */}
@@ -171,6 +179,7 @@ export default function Home() {
           selectedId={selectedEntryId}
           onSelect={setSelectedEntryId}
         />
+        <ThemePicker theme={theme} setTheme={setTheme} />
       </aside>
 
       {/* Journal area */}
@@ -221,7 +230,7 @@ export default function Home() {
 
           {/* Page footer */}
           <div className={styles.pageFooter}>
-            <span className={styles.pageNumber}>{totalEntries}</span>
+            <span className={styles.pageNumber}>{pageNumber}</span>
           </div>
         </div>
       </main>
