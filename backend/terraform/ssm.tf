@@ -21,3 +21,10 @@ resource "aws_ssm_parameter" "better_auth_secret" {
   value = "placeholder"
   lifecycle { ignore_changes = [value] }
 }
+
+resource "aws_ssm_parameter" "openai_api_key" {
+  name  = "VJ_OPENAI_API_KEY"
+  type  = "SecureString"
+  value = "placeholder"
+  lifecycle { ignore_changes = [value] }
+}

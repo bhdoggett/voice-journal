@@ -4,6 +4,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { VoiceRecorder } from "@/components/VoiceRecorder/VoiceRecorder";
 import { JournalEditor } from "@/components/JournalEditor/JournalEditor";
 import { Sidebar } from "@/components/Sidebar/Sidebar";
+import { RelatedEntries } from "@/components/RelatedEntries/RelatedEntries";
 import { useJournalEntries } from "@/hooks/useJournalEntries";
 import { useTheme } from "@/hooks/useTheme";
 import { useFont } from "@/hooks/useFont";
@@ -171,6 +172,7 @@ export default function Home() {
         onSelect={setSelectedEntryId}
         onDelete={deleteEntry}
         onNewEntry={() => setSelectedEntryId(null)}
+        onInsightEntrySelect={setSelectedEntryId}
         theme={theme}
         setTheme={setTheme}
         font={font}
@@ -206,6 +208,10 @@ export default function Home() {
                 <div className={styles.readOnlyText}>{viewedEntry.text}</div>
               </div>
               <div className={styles.readOnlyFooter} />
+              <RelatedEntries
+                entryId={viewedEntry.id}
+                onSelect={setSelectedEntryId}
+              />
             </>
           ) : (
             <JournalEditor

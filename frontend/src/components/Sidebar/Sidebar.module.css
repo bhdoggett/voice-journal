@@ -97,22 +97,21 @@
   color: var(--cover-accent);
 }
 
+/* ── Scrollable body ───────────────────────────────── */
+
+.sidebarBody {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
 /* ── Collapsible sections ──────────────────────────── */
 
 .section {
   display: flex;
   flex-direction: column;
-  flex: 1;
-  overflow: hidden;
   border-bottom: 1px solid var(--color-border);
-  min-height: 0;
-}
-
-.sectionSettings {
-  display: flex;
-  flex-direction: column;
   flex-shrink: 0;
-  border-bottom: 1px solid var(--color-border);
 }
 
 .sectionHeader {
@@ -149,16 +148,20 @@
   transform: rotate(-90deg);
 }
 
-.sectionBody {
-  flex: 1;
+/* Entries body: capped height so it doesn't swallow everything */
+.entriesBody {
+  max-height: 280px;
   overflow-y: auto;
-  min-height: 0;
+}
+
+/* Generic section body: expands naturally */
+.sectionBody {
+  overflow: visible;
 }
 
 /* ── AuthNav pinned to bottom ──────────────────────── */
 
 .authNavWrapper {
-  margin-top: auto;
   flex-shrink: 0;
   border-top: 1px solid var(--color-border);
 }

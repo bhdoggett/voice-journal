@@ -44,5 +44,16 @@ export async function POST(request: NextRequest) {
     updatedAt,
   });
 
+  // Fire-and-forget: generate embedding + themes asynchronously
+  const baseUrl = process.env.BETTER_AUTH_URL ?? "http://localhost:3000";
+  fetch(`${baseUrl}/api/analyze/embed`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      cookie: request.headers.get("cookie") ?? "",
+    },
+    body: JSON.stringify({ entryId: id }),
+  }).catch(console.error);
+
   return NextResponse.json({ ok: true });
 }
